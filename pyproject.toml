@@ -1,0 +1,40 @@
+[project]
+name = "arjuns_vault"
+version = "0.1"
+description = "Functions, classes, bash scripts, installations, notes I use commonly in my day-to-day"
+authors = [{ name = "Arjun Agarwal" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["./arjuns_vault/"]
+include = ["*"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.black]
+line_length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+filter_files = true
+
+[tool.flake8]
+max-line-length = 120
