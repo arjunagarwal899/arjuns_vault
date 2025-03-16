@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from arjscripts.analysis.constants import NO_DATA_ERROR, TABLE_COLUMNS
-from arjscripts.analysis.utils import (
+from arjcode.analysis.constants import NO_DATA_ERROR, TABLE_COLUMNS
+from arjcode.analysis.utils import (
     add_metrics,
     check_cols,
     get_thresh_cols,

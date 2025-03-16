@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from arjscripts.analysis.constants import NO_DATA_ERROR, TABLE_COLUMNS
-from arjscripts.analysis.utils import add_metrics, check_cols, find_nearest, preprocess_data, style_df, thresh
+from arjcode.analysis.constants import NO_DATA_ERROR, TABLE_COLUMNS
+from arjcode.analysis.utils import add_metrics, check_cols, find_nearest, preprocess_data, style_df, thresh
 from IPython.display import display
 from sklearn.metrics import roc_curve
 
