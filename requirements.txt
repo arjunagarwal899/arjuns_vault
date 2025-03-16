@@ -1,6 +1,10 @@
 black
 flake8
+IPython
+ipywidgets
 isort
+matplotlib
 numpy
 pandas
 pre-commit
+skimage
