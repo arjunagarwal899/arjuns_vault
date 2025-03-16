@@ -7,6 +7,7 @@ matplotlib
 numpy
 pandas
 pre-commit
+prettytable
 scipy
 seaborn
 skimage
