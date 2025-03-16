@@ -1,10 +1,10 @@
 import os
-from pprint import pprint
 
 
 def print_notes(filename):
-    if not os.path.exists(rf"./{filename}.txt"):
-        raise ValueError(f"File {filename}.txt not found")
+    filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), rf"{filename}.txt"))
+    if not os.path.exists(filepath):
+        raise ValueError(f"File {filepath} not found")
 
-    with open(rf"./{filename}.txt") as file:
-        pprint(file.read())
+    with open(filepath) as file:
+        print(file.read())

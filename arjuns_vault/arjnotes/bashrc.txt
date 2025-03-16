@@ -1,0 +1,19 @@
+alias pip=pip3
+alias python=python3
+alias nv=nvidia-smi
+alias rp=realpath
+alias c="clear"
+alias l="ls -alh"
+alias cl="c; l"
+alias wfc="watch -n1 'ls -1 | wc -l'"
+alias wl="watch -n1 'ls -lah'"
+alias wnv="watch -n1 nvidia-smi"
+alias nvi="nvitop -1"
+alias wnvi="nvitop"
+alias wt="watch -n1 tree"
+alias wtc="watch -n1 'tree | wc -l'"
+alias jl="jupyter lab --port "
+alias pid="ps -aux | grep "
+
+export PATH="$HOME/projects/bin:$PATH"
+export PATH="$HOME/projects/arjuns_vault/arjuns_vault/arjbun:$PATH"

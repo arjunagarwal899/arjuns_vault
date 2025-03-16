@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Function to check if a drive is an SSD or not
+is_ssd() {
+    local drive="$1"
+    local rota=$(cat "/sys/block/$drive/queue/rotational" 2>/dev/null)
+    if [ "$rota" == "0" ]; then
+        echo "yes"
+    else
+        echo "no"
+    fi
+}
+
+# Print the header
+printf "%-15s  %s\n" "DRIVE" "SSD"
+printf "%-15s  %s\n" "---------------" "---"
+
+# Loop through all block devices and print their name and SSD/HDD status
+for device in /sys/block/*; do
+    name=$(basename "$device")
+    if [ -d "$device/queue" ]; then
+        ssd_status=$(is_ssd "$name")
+        printf "%-15s  %s\n" "/dev/$name" "$ssd_status"
+    fi
+done

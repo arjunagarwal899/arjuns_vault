@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Get the user ID
+USER_ID=$(id -u)
+USER_NAME=$(id -un)
+
+# List all GPU processes and their PIDs using nvidia-smi
+PIDS=$(nvidia-smi --query-compute-apps=pid --format=csv,noheader,nounits)
+
+# Check if there are any PIDs to kill
+if [ -z "$PIDS" ]; then
+    echo "No GPU processes found."
+    exit 0
+fi
+
+# Filter PIDs belonging to the current user
+USER_PIDS=()
+for PID in $PIDS
+do
+    PID_OWNER=$(ps -o uid= -p $PID)
+    if [ "$PID_OWNER" == "$USER_ID" ]; then
+        USER_PIDS+=($PID)
+    fi
+done
+
+# Check if there are any user PIDs to kill
+if [ ${#USER_PIDS[@]} -eq 0 ]; then
+    echo "No GPU processes found for user $USER_NAME."
+    exit 0
+fi
+
+# Loop through each PID and kill it
+for PID in "${USER_PIDS[@]}"
+do
+    kill -9 $PID
+    echo "Killed process $PID using GPU for user $USER_NAME."
+done
+
+echo "All GPU processes for user $USER_NAME have been killed."
