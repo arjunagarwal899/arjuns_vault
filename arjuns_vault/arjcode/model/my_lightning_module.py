@@ -1,3 +1,5 @@
+import math
+
 import lightning as L
 from prettytable import PrettyTable
 
@@ -7,13 +9,13 @@ class MyLightningModule(L.LightningModule):
         self,
         log_gradients: bool = True,
         print_large_gradient_norms: bool = False,
-        large_gradient_norm_threshold: float = 100.0,
+        large_normalized_gradient_norm_threshold: float = 100.0,
         find_unused_parameters: bool = False,
     ):
         super().__init__()
         self.log_gradients = log_gradients
         self.print_large_gradient_norms = print_large_gradient_norms
-        self.large_gradient_norm_threshold = large_gradient_norm_threshold
+        self.large_normalized_gradient_norm_threshold = large_normalized_gradient_norm_threshold
         self.find_unused_parameters = find_unused_parameters
 
     def print_log(self):
@@ -43,8 +45,16 @@ class MyLightningModule(L.LightningModule):
             for name, param in self.named_parameters():
                 if param.grad is not None:
                     param_norm = param.grad.detach().norm(2).item()
-                    if self.print_large_gradient_norms and param_norm > self.large_gradient_norm_threshold:
-                        print(f"Gradient norm {name.ljust(50)}: {param_norm}")
+                    normalized_param_norm = param_norm / math.sqrt(param.numel())
+                    if (
+                        self.print_large_gradient_norms
+                        and normalized_param_norm > self.large_normalized_gradient_norm_threshold
+                    ):
+                        print(
+                            f"{name.ljust(50)} -- "
+                            f"Gradient norm:{param_norm}\t"
+                            f"Normalized gradient norm:{normalized_param_norm}"
+                        )
                     norm += param_norm**2
                     max_abs = max(max_abs, param.grad.detach().abs().max().item())
             norm = norm**0.5
