@@ -41,6 +41,7 @@ class MyLightningModule(L.LightningModule):
         # Log gradient info
         if self.log_gradients:
             norm = 0.0
+            normalized_norm = 0.0
             max_abs = 0.0
             for name, param in self.named_parameters():
                 if param.grad is not None:
@@ -56,12 +57,15 @@ class MyLightningModule(L.LightningModule):
                             f"Normalized gradient norm:{normalized_param_norm}"
                         )
                     norm += param_norm**2
+                    normalized_norm += normalized_param_norm**2
                     max_abs = max(max_abs, param.grad.detach().abs().max().item())
             norm = norm**0.5
+            normalized_norm = normalized_norm**0.5
             try:
                 self.log_dict(
                     {
                         "train_grad/norm": norm,
+                        "train_grad/param_normalized_norm": normalized_norm,
                         "train_grad/max_abs": max_abs,
                     },
                     sync_dist=True,
