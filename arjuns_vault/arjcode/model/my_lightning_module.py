@@ -23,10 +23,22 @@ class MyLightningModule(L.LightningModule):
         if self.global_rank != 0:
             return
 
+        def split_key(key):
+            """Ensures that only a 2-tuple is returned"""
+            if "/" not in key:
+                return "NO HEADER", key
+            splitted = key.split("/")
+            if len(splitted) > 2:
+                splitted[0] = "/".join(splitted[:-1])
+                splitted[1] = splitted[-1]
+            return tuple(splitted[:2])
+
         numbers = self.trainer.logged_metrics
         numbers = list(numbers.items())
-        for i in range(len(numbers)):
-            numbers[i] = [*numbers[i][0].split("/"), round(float(numbers[i][1]), 5)]
+        for i, (key, value) in enumerate(numbers):
+            value = round(float(value), 5)
+            key = split_key(key)
+            numbers[i] = key + (value,)
         numbers = sorted(numbers)
 
         print()
