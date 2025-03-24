@@ -51,7 +51,7 @@ class MyLightningModule(L.LightningModule):
 
     def on_after_backward(self):
         # Log gradient info
-        if self.log_gradients:
+        if self.training and self.log_gradients:
             norm = 0.0
             normalized_norm = 0.0
             max_abs = 0.0
@@ -77,10 +77,12 @@ class MyLightningModule(L.LightningModule):
                 self.log_dict(
                     {
                         "train_grad/norm": norm,
-                        "train_grad/param_normalized_norm": normalized_norm,
+                        "train_grad/norm_per_param": normalized_norm,
                         "train_grad/max_abs": max_abs,
                     },
                     sync_dist=True,
+                    on_step=True,
+                    on_epoch=False,
                 )
             except Exception:
                 print(f"Error in logging gradients {norm}, {max_abs}")
