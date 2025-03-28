@@ -4,6 +4,7 @@ from torch import nn
 def freeze_module(module: nn.Module):
     for param in module.parameters():
         param.requires_grad = False
+    module.eval()
 
 
 def freeze_modules(modules: list[nn.Module]):
