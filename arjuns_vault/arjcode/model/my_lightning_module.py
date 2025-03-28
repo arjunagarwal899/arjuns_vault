@@ -11,6 +11,9 @@ class MyLightningModule(L.LightningModule):
         print_large_gradient_norms: bool = False,
         large_normalized_gradient_norm_threshold: float = 100.0,
         find_unused_parameters: bool = False,
+        print_trainable_parameters: bool = False,
+        print_frozen_parameters: bool = False,
+        print_all_parameters: bool = False,
     ):
         super().__init__()
         self.log_gradients = log_gradients
