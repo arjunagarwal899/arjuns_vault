@@ -8,16 +8,17 @@ class MyLightningModule(L.LightningModule):
     def __init__(
         self,
         log_gradients: bool = True,
+        print_small_gradient_norms: bool = False,
         print_large_gradient_norms: bool = False,
-        large_normalized_gradient_norm_threshold: float = 100.0,
+        small_normalized_gradient_norm_threshold: float = 1e-2,
+        large_normalized_gradient_norm_threshold: float = 1e2,
         find_unused_parameters: bool = False,
-        print_trainable_parameters: bool = False,
-        print_frozen_parameters: bool = False,
-        print_all_parameters: bool = False,
     ):
         super().__init__()
         self.log_gradients = log_gradients
+        self.print_small_gradient_norms = print_small_gradient_norms
         self.print_large_gradient_norms = print_large_gradient_norms
+        self.small_normalized_gradient_norm_threshold = small_normalized_gradient_norm_threshold
         self.large_normalized_gradient_norm_threshold = large_normalized_gradient_norm_threshold
         self.find_unused_parameters = find_unused_parameters
 
@@ -62,6 +63,15 @@ class MyLightningModule(L.LightningModule):
                 if param.grad is not None:
                     param_norm = param.grad.detach().norm(2).item()
                     normalized_param_norm = param_norm / math.sqrt(param.numel())
+                    if (
+                        self.print_small_gradient_norms
+                        and normalized_param_norm < self.small_normalized_gradient_norm_threshold
+                    ):
+                        print(
+                            f"{name.ljust(50)} -- "
+                            f"Gradient norm:{param_norm}\t"
+                            f"Normalized gradient norm:{normalized_param_norm}"
+                        )
                     if (
                         self.print_large_gradient_norms
                         and normalized_param_norm > self.large_normalized_gradient_norm_threshold
