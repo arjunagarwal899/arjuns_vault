@@ -16,6 +16,8 @@ def describe_model(model):
     information = information.reset_index()
     information = information.astype({"Parameters": int})
 
+    information["Parameters"] = information["Parameters"].apply(lambda x: f"{x:,}")
+
     description = information.iloc[:-1]
     summary = information.iloc[-1:]
 
