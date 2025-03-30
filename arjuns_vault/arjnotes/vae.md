@@ -25,7 +25,7 @@ According to Bayes' theorem:
 
 $$p(x) = \frac{p(x|z)p(z)}{p(z|x)}$$
 
-Taking log on both sides:
+Taking $\log$ on both sides:
 
 $$\log p(x) = \log p(x|z) + \log p(z) - \log p(z|x)$$
 
