@@ -12,7 +12,7 @@ One example:
 >>> class A(B, C): pass
 ```
 
-Inhertiance graph:
+Inheritance graph:
 
 ```
                           6
