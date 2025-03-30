@@ -35,29 +35,30 @@ This equation is mathematically sound for a specific value of $z$. However, in V
 
 Taking the expectation with respect to our variational distribution $q(z|x)$ on both sides, we get:
 
-$$\mathbb{E}_{z \sim q(z|x)}[\log p(x)] = \mathbb{E}_{z \sim q(z|x)}[\log p(x|z) + \log p(z) - \log p(z|x)]$$
+<!-- Spaces have been added after the underscores because otherwise GitHub preview assumes I am using italics -->
+$$\mathbb{E}_ {z \sim q(z|x)}[\log p(x)] = \mathbb{E}_ {z \sim q(z|x)}[\log p(x|z) + \log p(z) - \log p(z|x)]$$
 
-$\log p(x)$ is constant with respect to $z$, also we add and subtract $\mathbb{E}_{z \sim q(z|x)}[\log q(z|x)]$:
+$\log p(x)$ is constant with respect to $z$, also we add and subtract $\mathbb{E}_ {z \sim q(z|x)}[\log q(z|x)]$:
 
-$$\log p(x) = \mathbb{E}_{z \sim q(z|x)}[\log p(x|z) - \underline{\log q(z|x)} + \log p(z) + \underline{\log q(z|x)} - \log p(z|x)]$$
+$$\log p(x) = \mathbb{E}_ {z \sim q(z|x)}[\log p(x|z) - \underline{\log q(z|x)} + \log p(z) + \underline{\log q(z|x)} - \log p(z|x)]$$
 
 Now we split the terms:
 
-$$\log p(x) = \mathbb{E}_{z \sim q(z|x)}[\log p(x|z)] - \mathbb{E}_{z \sim q(z|x)}[\log q(z|x) - \log p(z)] + \mathbb{E}_{z \sim q(z|x)}[\log q(z|x) - \log p(z|x)]$$
+$$\log p(x) = \mathbb{E}_ {z \sim q(z|x)}[\log p(x|z)] - \mathbb{E}_ {z \sim q(z|x)}[\log q(z|x) - \log p(z)] + \mathbb{E}_ {z \sim q(z|x)}[\log q(z|x) - \log p(z|x)]$$
 
 Rearranging:
 
-$$\log p(x) = \mathbb{E}_{z \sim q(z|x)}[\log p(x|z)] - \mathbb{E}_{z \sim q(z|x)}\left[\log \frac{q(z|x)}{p(z)}\right] + \mathbb{E}_{z \sim q(z|x)}\left[\log \frac{q(z|x)}{p(z|x)}\right]$$
+$$\log p(x) = \mathbb{E}_ {z \sim q(z|x)}[\log p(x|z)] - \mathbb{E}_ {z \sim q(z|x)}\left[\log \frac{q(z|x)}{p(z)}\right] + \mathbb{E}_ {z \sim q(z|x)}\left[\log \frac{q(z|x)}{p(z|x)}\right]$$
 
 This can be written in terms of KL-divergence:
 
 Rearranging, we get:
 
-$$\log p(x) = \underbrace{\mathbb{E}_{z \sim q(z|x)}[\log p(x|z)] - D_{KL}[q(z|x) \| p(z)]}_{\text{ELBO}} + \underbrace{D_{KL}[q(z|x) \| p(z|x)]}_{>=0}$$
+$$\log p(x) = \underbrace{\mathbb{E}_ {z \sim q(z|x)}[\log p(x|z)] - D_ {KL}[q(z|x) \| p(z)]}_ {\text{ELBO}} + \underbrace{D_ {KL}[q(z|x) \| p(z|x)]}_ {>=0}$$
 
 Remember that $p(z|x)$ is intractable, but since KL divergence is always $>=0$, we can safely say:
 
-$$\log p(x) >= \underbrace{\mathbb{E}_{z \sim q(z|x)}[\log p(x|z)]}_{\text{Minimize NLL i.e. reconstruction loss}} - \underbrace{D_{KL}[q(z|x) \| p(z)]}_{\text{KL Divergence between estimated posterior and assumed prior}} = \text{ELBO}$$
+$$\log p(x) >= \underbrace{\mathbb{E}_ {z \sim q(z|x)}[\log p(x|z)]}_ {\text{Minimize NLL i.e. reconstruction loss}} - \underbrace{D_ {KL}[q(z|x) \| p(z)]}_ {\text{KL Divergence between estimated posterior and assumed prior}} = \text{ELBO}$$
 
 
 If we maximize the ELBO, we approximately maximize $\log p(x)$
