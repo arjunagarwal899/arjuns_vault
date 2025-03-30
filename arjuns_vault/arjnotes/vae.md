@@ -21,11 +21,11 @@ To maximize $p(x)$ as that means maximizing the likelihood of our data being gen
 
 Explanation of how VAEs work:
 
-By Bayes' rule:
+According to Bayes' theorem:
 
 $$p(x) = \frac{p(x|z)p(z)}{p(z|x)}$$
 
-i.e.
+Taking log on both sides:
 
 $$\log p(x) = \log p(x|z) + \log p(z) - \log p(z|x)$$
 
