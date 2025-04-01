@@ -10,18 +10,17 @@ import importlib
 import inspect
 import os
 import sys
-from configparser import ConfigParser
+
+import toml
 
 repo_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 config_path = os.path.join(repo_root_path, "pyproject.toml")
-config = ConfigParser(delimiters=["="])
-config.read(config_path, encoding="utf-8")
-cfg = config["DEFAULT"]
+cfg = toml.load(config_path)
 
-project = cfg["name"]
-author = cfg["author"]
+project = cfg["project"]["name"]
+author = cfg["project"]["authors"][0]["name"]
 copyright = f"2023 onwards, {author}"
-release = cfg["version"]
+release = cfg["project"]["version"]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
