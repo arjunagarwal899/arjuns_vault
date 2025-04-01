@@ -2,9 +2,9 @@
 name = "arjuns_vault"
 version = "0.1"
 description = "Functions, classes, bash scripts, installations, notes I use commonly in my day-to-day"
-authors = [{ name = "Arjun Agarwal" }]
+authors = [{ name = "Arjun Agarwal", email = "arjunagarwal899@gmail.com" }]
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { text = "GPL-3.0-only" }
 requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -13,6 +13,10 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS"
 ]
+
+[project.urls]
+homepage = "https://arjunagarwal899.github.io/arjuns_vault"
+repository = "https://github.com/arjunagarwal899/arjuns_vault"
 
 [build-system]
 requires = ["setuptools", "wheel"]
