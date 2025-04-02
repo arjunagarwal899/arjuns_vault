@@ -31,7 +31,7 @@ $$\log p(x) = \log p(x|z) + \log p(z) - \log p(z|x)$$
 
 Note that the true posterior $p(z|x)$ is intractable (because it itself requires the value of $p(x)$ to be known) and has to be estimated using a network i.e. the VAE encoder
 
-This equation is mathematically sound for a specific value of $z$. However, in VAE, we need to reason about expectations across the latent variable distribution.
+This equation is mathematically sound for discrete values of $z$. However, in VAE, we need to reason about expectations across the latent variable distribution.
 
 Taking the expectation with respect to our variational distribution $q(z|x)$ on both sides, we get:
 
