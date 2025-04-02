@@ -1,5 +1,3 @@
-TODO: This is currently incomplete
-
 Terminology:
 - $x$: input
 - $E_i$: encoder block at $i$ th level
