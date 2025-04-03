@@ -8,9 +8,11 @@ code PATH_TO_SITE_PACKAGES/sitecustomize.py
 To that file, add the following:
 
 ```python
+import lightning
+import torch
 from rich.traceback import install
 
-install(width=130, code_width=120, word_wrap=True)
+install(width=130, code_width=120, word_wrap=True, suppress=(torch, lightning))
 ```
 
 ---
