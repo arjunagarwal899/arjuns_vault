@@ -64,3 +64,13 @@ $$\log p(x) >= \underbrace{\mathbb{E}_ {z \sim q(z|x)}[\log p(x|z)]}_ {\text{Min
 If we maximize the ELBO, we approximately maximize $\log p(x)$
 
 ---
+
+In the ELBO, the two terms are also written as:
+
+$$\text{Rate} = \text{KL Divergence} = D_ {KL}[q(z|x) \| p(z)]$$
+
+$$\text{Distortion} = \text{Reconstruction loss} = \mathbb{E}_ {z \sim q(z|x)}[\log p(x|z)]$$
+
+These two terms are used to plot the rate-distortion curve for different amounts of KL regularization to find the optimal balance between reconstruction and regularization.
+
+---
