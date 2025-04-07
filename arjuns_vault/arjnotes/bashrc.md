@@ -51,7 +51,7 @@ fi
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 
-# ---------- ALIASES AND VARIABLES ----------
+# ---------- ALIASES ----------
 alias pip=pip3
 alias python=python3
 alias nv=nvidia-smi
@@ -72,6 +72,8 @@ alias pid="ps -aux | grep "
 alias io="iostat -m"
 alias wio="iostat -m 1"
 
+# ---------- VARIABLES ----------
 export PATH="$HOME/projects/bin:$PATH"
 export PATH="$HOME/projects/arjuns_vault/arjuns_vault/arjbun:$PATH"
+# Install gem and add its associated variables: https://jekyllrb.com/docs/installation/ubuntu/
 ```

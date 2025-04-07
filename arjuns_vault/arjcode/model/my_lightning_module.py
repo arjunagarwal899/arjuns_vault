@@ -1,7 +1,10 @@
 import math
+from functools import partial
 
 import lightning as L
+import torch
 from prettytable import PrettyTable
+from torch import nn
 
 
 class MyLightningModule(L.LightningModule):
@@ -12,7 +15,7 @@ class MyLightningModule(L.LightningModule):
         print_large_gradient_norms: bool = False,
         small_normalized_gradient_norm_threshold: float = 1e-2,
         large_normalized_gradient_norm_threshold: float = 1e2,
-        find_unused_parameters: bool = False,
+        identify_unused_parameters: bool = False,
     ):
         super().__init__()
         self.log_gradients = log_gradients
@@ -20,7 +23,56 @@ class MyLightningModule(L.LightningModule):
         self.print_large_gradient_norms = print_large_gradient_norms
         self.small_normalized_gradient_norm_threshold = small_normalized_gradient_norm_threshold
         self.large_normalized_gradient_norm_threshold = large_normalized_gradient_norm_threshold
-        self.find_unused_parameters = find_unused_parameters
+        self.identify_unused_parameters = identify_unused_parameters
+
+    def register_nans_infs_logging_hook(self):
+        def identify_nans_infs_hook(module: nn.Module, input, output, module_name):
+            nan_weights_names = []
+            nan_input_names = []
+            nan_outputs_names = []
+
+            # Check weights
+            for name, param in module.named_parameters():
+                if param is not None and (torch.isnan(param).any() or torch.isinf(param).any()):
+                    nan_weights_names.append(name)
+
+            def recurse(data, name="output"):
+                if isinstance(data, torch.Tensor):
+                    yield name, data
+                elif isinstance(data, (list, tuple)):
+                    for i, item in enumerate(data):
+                        yield from recurse(item, f"{name}.{i}")
+                elif isinstance(data, dict):
+                    for key, value in data.items():
+                        yield from recurse(value, f"{name}.{key}")
+
+            # Check inputs
+            if input is not None:
+                for name, item in recurse(input):
+                    if torch.isnan(item).any() or torch.isinf(item).any():
+                        nan_input_names.append(name)
+
+            # Check outputs
+            if output is not None:
+                for name, item in recurse(output):
+                    if torch.isnan(item).any() or torch.isinf(item).any():
+                        nan_outputs_names.append(name)
+
+            if nan_weights_names or nan_input_names or nan_outputs_names:
+                print(f"NaN detected in {module_name}")
+                if nan_weights_names:
+                    print("Weights:")
+                    print(nan_weights_names)
+                if nan_input_names:
+                    print("Inputs:")
+                    print(nan_input_names)
+                if nan_outputs_names:
+                    print("Outputs:")
+                    print(nan_outputs_names)
+
+        for name, module in self.named_modules():
+            module.register_forward_hook(partial(identify_nans_infs_hook, module_name=name))
+        print("Identify NaN and Inf hook registered")
 
     def print_log(self):
         """Should be called at the end of every epoch to print a table of all metrics that were logged"""
@@ -102,8 +154,8 @@ class MyLightningModule(L.LightningModule):
 
     def on_before_zero_grad(self, optimizer):
         """Should be run to identify all unused parameters in case of "unused parameters" error.
-        Use with ddp_find_unused_parameters_true"""
-        if self.find_unused_parameters:
+        Use with ddp_identify_unused_parameters_true"""
+        if self.identify_unused_parameters:
             if self.global_rank == 0:
                 print("Zero grad params")
                 for name, param in self.named_parameters():
