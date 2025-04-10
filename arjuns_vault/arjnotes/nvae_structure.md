@@ -22,3 +22,4 @@ Here is how the NVAE training process for a depth of 3 looks like:
 For sampling:
 
 ![NVAE sampling architecture](rsrc/nvae_sampling_architecture.png)
+Or you can sample the posteriors directly with conditioning on the prior.
