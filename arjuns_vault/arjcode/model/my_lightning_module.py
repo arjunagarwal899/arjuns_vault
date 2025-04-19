@@ -156,7 +156,7 @@ class MyLightningModule(L.LightningModule):
         """Should be run to identify all unused parameters in case of "unused parameters" error.
         Use with ddp_identify_unused_parameters_true"""
         if self.identify_unused_parameters:
-            if self.global_rank == 0:
+            if self.global_rank == 0 and self.trainer.global_step > 0:  # Don't run on first step
                 print("Zero grad params")
                 for name, param in self.named_parameters():
                     if param.grad is None:
