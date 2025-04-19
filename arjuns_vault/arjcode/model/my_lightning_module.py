@@ -159,6 +159,6 @@ class MyLightningModule(L.LightningModule):
             if self.global_rank == 0 and self.trainer.global_step > 0:  # Don't run on first step
                 print("Zero grad params")
                 for name, param in self.named_parameters():
-                    if param.grad is None:
+                    if param.requires_grad and param.grad is None:
                         print(name)
                 print()
