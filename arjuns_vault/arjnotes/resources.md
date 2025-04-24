@@ -8,4 +8,6 @@ Understanding MMD-based (Maximum Mean Discrepancy) VAEs (InfoVAEs): https://ermo
 
 Math behind DDPM: https://www.youtube.com/watch?v=H45lF4sUgiE
 
+DiffAE (Diffusion Autoencoders): https://www.youtube.com/watch?v=Amp3K1YsRXE
+
 Understanding FSDP: https://www.youtube.com/watch?v=By_O0k102PY
