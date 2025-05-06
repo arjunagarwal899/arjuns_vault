@@ -25,6 +25,9 @@ class MyLightningModule(L.LightningModule):
         self.large_normalized_gradient_norm_threshold = large_normalized_gradient_norm_threshold
         self.identify_unused_parameters = identify_unused_parameters
 
+    def get_steps_per_epoch(self):
+        return self.trainer.estimated_stepping_batches * self.trainer.accumulate_grad_batches // self.trainer.max_epochs
+
     def register_nans_infs_logging_hook(self):
         def identify_nans_infs_hook(module: nn.Module, input, output, module_name):
             nan_weights_names = []
@@ -112,7 +115,7 @@ class MyLightningModule(L.LightningModule):
             normalized_norm = 0.0
             max_abs = 0.0
             for name, param in self.named_parameters():
-                if param.grad is not None:
+                if param.grad is not None and param.numel() != 0:  # numel can be 0 in cases of model sharding eg. fsdp
                     param_norm = param.grad.detach().norm(2).item()
                     normalized_param_norm = param_norm / math.sqrt(param.numel())
                     if (
@@ -160,5 +163,5 @@ class MyLightningModule(L.LightningModule):
                 print("Zero grad params")
                 for name, param in self.named_parameters():
                     if param.requires_grad and param.grad is None:
-                        print(name)
+                        print(name, param.names)  # TODO: Check what this prints
                 print()

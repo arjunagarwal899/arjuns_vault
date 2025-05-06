@@ -2,11 +2,11 @@ import pandas as pd
 from prettytable import PrettyTable
 
 
-def describe_model(model):
+def describe_model(model, describe_frozen: bool = False):
     information = pd.DataFrame(columns=["Module"]).set_index("Module")
 
     for module, parameters in model.named_parameters():
-        if not parameters.requires_grad:
+        if not describe_frozen and not parameters.requires_grad:
             continue
         params = parameters.numel()
         information.loc[module, "Parameters"] = params
