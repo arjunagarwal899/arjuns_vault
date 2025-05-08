@@ -2,8 +2,7 @@ import itertools
 
 import numpy as np
 import pandas as pd
-from confidenceinterval import tnr_score, tpr_score
-from sklearn.metrics import roc_auc_score
+from confidenceinterval import roc_auc_score, tnr_score, tpr_score
 
 
 def thresh(df: pd.DataFrame, scores_col: str, thresholds: list, strict: bool = True):
@@ -107,6 +106,7 @@ def add_metrics(df: pd.DataFrame, uncertainty_ranges: list = [], uncertainty_col
     for i in range(len(uncertainty_ranges)):
         df[f"Uncertain{i}"] = df[f"Uncertain{i}"].astype(bool)
 
+    auc, auc_ci = roc_auc_score(df["GT"], df["Score"], confidence_level=0.95)
     sen, sen_ci = tpr_score(df["GT"], df["Pred"], confidence_level=0.95)
     spec, spec_ci = tnr_score(df["GT"], df["Pred"], confidence_level=0.95)
 
@@ -132,9 +132,13 @@ def add_metrics(df: pd.DataFrame, uncertainty_ranges: list = [], uncertainty_col
     df["Acc"] = (df["TP"] + df["TN"]) / (df["Total"])
     if np.unique(df["Score"].values).size > 5:
         try:
-            df["AUC"] = roc_auc_score(df["GT"], df["Score"])
+            df["AUC"] = auc
+            df["AUC 95% CI Lower"] = auc_ci[0]
+            df["AUC 95% CI Upper"] = auc_ci[1]
         except Exception:
             df["AUC"] = np.nan
+            df["AUC 95% CI Lower"] = np.nan
+            df["AUC 95% CI Upper"] = np.nan
         df["Far FN"] = len(df[df["GT"] & ~df["Pred"] & ~df["Far FN Pred"]])
         df["Far FP"] = len(df[~df["GT"] & df["Pred"] & df["Far FP Pred"]])
         for i, uncertainty_colname in enumerate(uncertainty_colnames):
@@ -154,6 +158,8 @@ def style_df(df: pd.DataFrame, show_bars: bool = True):
         "P",
         "N",
         "AUC",
+        "AUC 95% CI Lower",
+        "AUC 95% CI Upper",
         "PP",
         "PN",
         "TP",
