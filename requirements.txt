@@ -1,4 +1,5 @@
 black
+confidenceinterval
 flake8
 IPython
 ipywidgets

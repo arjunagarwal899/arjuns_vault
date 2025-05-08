@@ -2,6 +2,7 @@ import itertools
 
 import numpy as np
 import pandas as pd
+from confidenceinterval import tnr_score, tpr_score
 from sklearn.metrics import roc_auc_score
 
 
@@ -106,6 +107,9 @@ def add_metrics(df: pd.DataFrame, uncertainty_ranges: list = [], uncertainty_col
     for i in range(len(uncertainty_ranges)):
         df[f"Uncertain{i}"] = df[f"Uncertain{i}"].astype(bool)
 
+    sen, sen_ci = tpr_score(df["GT"], df["Pred"], confidence_level=0.95)
+    spec, spec_ci = tnr_score(df["GT"], df["Pred"], confidence_level=0.95)
+
     df["Total"] = len(df)
     df["P"] = len(df[df["GT"]])
     df["N"] = len(df[~df["GT"]])
@@ -115,8 +119,12 @@ def add_metrics(df: pd.DataFrame, uncertainty_ranges: list = [], uncertainty_col
     df["FP"] = len(df[~df["GT"] & df["Pred"]])
     df["FN"] = len(df[df["GT"] & ~df["Pred"]])
     df["TN"] = len(df[~df["GT"] & ~df["Pred"]])
-    df["Sen"] = df["TP"] / df["P"]
-    df["Spec"] = df["TN"] / df["N"]
+    df["Sen"] = sen
+    df["Sen 95% CI Lower"] = sen_ci[0]
+    df["Sen 95% CI Upper"] = sen_ci[1]
+    df["Spec"] = spec
+    df["Spec 95% CI Lower"] = spec_ci[0]
+    df["Spec 95% CI Upper"] = spec_ci[1]
     df["Youden"] = df["Sen"] + df["Spec"] - 1
     df["PPV"] = df["TP"] / df["PP"]
     df["NPV"] = df["TN"] / df["PN"]
@@ -155,7 +163,11 @@ def style_df(df: pd.DataFrame, show_bars: bool = True):
         "Far FN",
         "Far FP",
         "Sen",
+        "Sen 95% CI Lower",
+        "Sen 95% CI Upper",
         "Spec",
+        "Spec 95% CI Lower",
+        "Spec 95% CI Upper",
         "Youden",
         "PPV",
         "NPV",
@@ -175,7 +187,19 @@ def style_df(df: pd.DataFrame, show_bars: bool = True):
                     {"selector": "th", "props": [("border-left", "1px solid black")]},
                     {"selector": "td", "props": [("border-left", "1px solid black")]},
                 ]
-                for key in {"Total", "P", "AUC", "TP", "Far FN", "Sen", "Youden", "PPV", "Acc", "F1", extra_colname}
+                for key in {
+                    "Total",
+                    "P",
+                    "AUC",
+                    "TP",
+                    "Far FN",
+                    "Sen",
+                    "Youden",
+                    "PPV",
+                    "Acc",
+                    "F1",
+                    extra_colname,
+                }
             }
         )
         .format(precision=3)
