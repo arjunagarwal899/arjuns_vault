@@ -5,13 +5,15 @@ from prettytable import PrettyTable
 def describe_model(model, describe_frozen: bool = False):
     information = pd.DataFrame(columns=["Module"]).set_index("Module")
 
-    for module, parameters in model.named_parameters():
-        if not describe_frozen and not parameters.requires_grad:
+    for module, parameter in model.named_parameters():
+        parameter: nn.Parameter
+        if not describe_frozen and not parameter.requires_grad:
             continue
-        params = parameters.numel()
-        information.loc[module, "Parameters"] = params
+        information.loc[module, "Device"] = parameter.device
+        information.loc[module, "Parameters"] = parameter.numel()
 
     information.loc["TOTAL", "Parameters"] = information["Parameters"].sum()
+    information.loc["TOTAL", "Device"] = "N/A"
 
     information = information.reset_index()
     information = information.astype({"Parameters": int})
@@ -33,4 +35,5 @@ if __name__ == "__main__":
 
     # Example usage
     model = nn.Sequential(nn.Linear(10, 20), nn.ReLU(), nn.Linear(20, 10))
+    model[0].to("cuda:0")
     describe_model(model)
