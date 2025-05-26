@@ -5,7 +5,7 @@ import torch
 from torch import nn
 
 
-def profile(device, model: nn.Module, *model_args, **model__kwargs):
+def profile(device, model: nn.Module, *model_args, loss_fn, **model__kwargs):
     # Track memory before execution
     torch.cuda.reset_peak_memory_stats()
     process = psutil.Process()
@@ -16,7 +16,7 @@ def profile(device, model: nn.Module, *model_args, **model__kwargs):
     toc = perf_counter()
     forward_time = toc - tic
 
-    loss: torch.Tensor = sample_output.sum()
+    loss: torch.Tensor = loss_fn(sample_output)
     tic = perf_counter()
     loss.backward()
     toc = perf_counter()

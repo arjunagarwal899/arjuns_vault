@@ -163,5 +163,5 @@ class MyLightningModule(L.LightningModule):
                 print("Zero grad params")
                 for name, param in self.named_parameters():
                     if param.requires_grad and param.grad is None:
-                        print(name, param.names)  # TODO: Check what this prints
+                        print(name)
                 print()
