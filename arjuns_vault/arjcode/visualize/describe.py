@@ -7,8 +7,12 @@ def describe_model(model, describe_frozen: bool = False):
 
     for module, parameter in model.named_parameters():
         parameter: nn.Parameter
-        if not describe_frozen and not parameter.requires_grad:
+
+        if describe_frozen:
+            information.loc[module, "Requires grad"] = parameter.requires_grad
+        elif not parameter.requires_grad:
             continue
+
         information.loc[module, "Device"] = parameter.device
         information.loc[module, "Parameters"] = parameter.numel()
 
@@ -35,5 +39,7 @@ if __name__ == "__main__":
 
     # Example usage
     model = nn.Sequential(nn.Linear(10, 20), nn.ReLU(), nn.Linear(20, 10))
+    model[0].requires_grad_(False)
     model[0].to("cuda:0")
-    describe_model(model)
+    describe_model(model, describe_frozen=False)
+    describe_model(model, describe_frozen=True)
