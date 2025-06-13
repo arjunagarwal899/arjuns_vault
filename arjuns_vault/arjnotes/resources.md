@@ -6,7 +6,11 @@ Understanding KL Divergence: https://www.youtube.com/watch?v=SxGYPqCgJWM
 
 Understanding MMD-based (Maximum Mean Discrepancy) VAEs (InfoVAEs): https://ermongroup.github.io/blog/a-tutorial-on-mmd-variational-autoencoders/
 
+
+Understanding score-based generation models from the basics: https://www.youtube.com/watch?v=B4oHJpEJBAA
+
 Math behind DDPM: https://www.youtube.com/watch?v=H45lF4sUgiE
+
 
 DiffAE (Diffusion Autoencoders): https://www.youtube.com/watch?v=Amp3K1YsRXE
 
