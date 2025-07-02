@@ -109,7 +109,7 @@ def threshold_analysis(
 
                 _df = pd.concat(dfs)
                 _df = pd.DataFrame(_df.groupby("Threshold", group_keys=False).apply(add_metrics))
-                _df = _df.groupby("Threshold").agg({colname: np.max for colname in table_columns})
+                _df = _df.groupby("Threshold").agg({colname: "max" for colname in table_columns})
                 _df = _df.sort_index()
                 _names = [_names] if not isinstance(_names, list) else _names
                 _df.index = pd.MultiIndex.from_tuples(

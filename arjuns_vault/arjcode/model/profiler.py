@@ -30,4 +30,3 @@ def profile(device, model: nn.Module, *model_args, loss_fn, **model__kwargs):
     print(f"RAM: {(final_mem - initial_mem) / 2**30} GB peak mem used")
     print(f"Time (forward): {forward_time:.3f} s")
     print(f"Time (backward): {backward_time:.3f} s")
-    print(f"Time (backward): {backward_time:.3f} s")

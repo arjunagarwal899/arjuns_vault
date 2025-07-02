@@ -2,7 +2,9 @@ import itertools
 
 import numpy as np
 import pandas as pd
-from confidenceinterval import roc_auc_score, tnr_score, tpr_score
+from confidenceinterval import roc_auc_score as ci_roc_auc_score
+from confidenceinterval import tnr_score, tpr_score
+from sklearn.metrics import roc_auc_score as sk_roc_auc_score
 
 
 def thresh(df: pd.DataFrame, scores_col: str, thresholds: list, strict: bool = True):
@@ -10,6 +12,7 @@ def thresh(df: pd.DataFrame, scores_col: str, thresholds: list, strict: bool = T
         thresholds = [thresholds]
 
     threshed = df[scores_col].copy()
+    threshed = threshed.astype(float)
     threshed[:] = np.nan
 
     def _thresh(indices, threshold):
@@ -58,6 +61,7 @@ def get_thresh_cols(thresholds: list):
 def get_uncertain(scores: pd.Series, thresholds: tuple[float, float]):
     uncertain = scores.copy()
 
+    uncertain = uncertain.astype(float)
     uncertain[:] = 0
     uncertain[(thresholds[0] <= scores) & (scores < thresholds[1])] = 1
     uncertain = uncertain.astype(int)
@@ -106,7 +110,11 @@ def add_metrics(df: pd.DataFrame, uncertainty_ranges: list = [], uncertainty_col
     for i in range(len(uncertainty_ranges)):
         df[f"Uncertain{i}"] = df[f"Uncertain{i}"].astype(bool)
 
-    auc, auc_ci = roc_auc_score(df["GT"], df["Score"], confidence_level=0.95)
+    try:
+        auc, auc_ci = ci_roc_auc_score(df["GT"], df["Score"], confidence_level=0.95)
+    except Exception:
+        auc = sk_roc_auc_score(df["GT"], df["Score"])
+        auc_ci = (np.nan, np.nan)
     sen, sen_ci = tpr_score(df["GT"], df["Pred"], confidence_level=0.95)
     spec, spec_ci = tnr_score(df["GT"], df["Pred"], confidence_level=0.95)
 

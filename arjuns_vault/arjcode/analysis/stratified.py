@@ -89,6 +89,7 @@ def stratified_analysis(
                 df = df.sort_values("Total", ascending=False)
                 df = df.iloc[: min(limit, len(df))]
 
+            df.index = df.index.astype(str)
             df = df.sort_index()
 
             if not return_df:
