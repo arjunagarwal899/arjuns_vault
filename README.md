@@ -5,3 +5,5 @@ This repository contains the following:
 4) arjscripts: Any non-bin scripts or apps that I use often
 
 This repo is mainly for personal use and is updated infrequently an irregularly (i.e. only when I have new stuff to add to it).
+
+Documentation can be found at: https://agarwalarjun.com/arjuns_vault/
