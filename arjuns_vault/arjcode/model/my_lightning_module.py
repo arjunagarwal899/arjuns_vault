@@ -28,6 +28,9 @@ class MyLightningModule(L.LightningModule):
     def get_steps_per_epoch(self):
         return self.trainer.estimated_stepping_batches * self.trainer.accumulate_grad_batches // self.trainer.max_epochs
 
+    def get_stepping_batches_per_epoch(self):
+        return self.trainer.estimated_stepping_batches // self.trainer.max_epochs
+
     def register_nans_infs_logging_hook(self):
         def identify_nans_infs_hook(module: nn.Module, input, output, module_name):
             nan_weights_names = []
