@@ -10,7 +10,8 @@ from torch import nn
 class MyLightningModule(L.LightningModule):
     def __init__(
         self,
-        log_gradients: bool = True,
+        log_gradients_before_clipping: bool = False,
+        log_gradients_after_clipping: bool = True,
         print_small_gradient_norms: bool = False,
         print_large_gradient_norms: bool = False,
         small_normalized_gradient_norm_threshold: float = 1e-2,
@@ -18,7 +19,8 @@ class MyLightningModule(L.LightningModule):
         identify_unused_parameters: bool = False,
     ):
         super().__init__()
-        self.log_gradients = log_gradients
+        self.log_gradients_before_clipping = log_gradients_before_clipping
+        self.log_gradients_after_clipping = log_gradients_after_clipping
         self.print_small_gradient_norms = print_small_gradient_norms
         self.print_large_gradient_norms = print_large_gradient_norms
         self.small_normalized_gradient_norm_threshold = small_normalized_gradient_norm_threshold
@@ -111,9 +113,29 @@ class MyLightningModule(L.LightningModule):
         print(table)
         print()
 
+    def on_before_zero_grad(self, optimizer):
+        """Should be run to identify all unused parameters in case of "unused parameters" error.
+        Use with ddp_identify_unused_parameters_true"""
+        if self.identify_unused_parameters:
+            if self.global_rank == 0 and self.trainer.global_step > 0:  # Don't run on first step
+                print("Zero grad params")
+                for name, param in self.named_parameters():
+                    if param.requires_grad and param.grad is None:
+                        print(name)
+                print()
+
     def on_after_backward(self):
+        if self.log_gradients_before_clipping:
+            self._log_gradients(suffix="before_clipping")
+
+    def configure_gradient_clipping(self, *args, **kwargs):
+        super().configure_gradient_clipping(*args, **kwargs)
+        if self.log_gradients_after_clipping:
+            self._log_gradients(suffix="after_clipping")
+
+    def _log_gradients(self, suffix: str):
         # Log gradient info
-        if self.training and self.log_gradients:
+        if self.training:
             norm = 0.0
             normalized_norm = 0.0
             max_abs = 0.0
@@ -147,9 +169,9 @@ class MyLightningModule(L.LightningModule):
             try:
                 self.log_dict(
                     {
-                        "train_grad/norm": norm,
-                        "train_grad/norm_per_param": normalized_norm,
-                        "train_grad/max_abs": max_abs,
+                        f"train_grad/norm_{suffix}": norm,
+                        f"train_grad/norm_per_param_{suffix}": normalized_norm,
+                        f"train_grad/max_abs_{suffix}": max_abs,
                     },
                     sync_dist=True,
                     on_step=True,
@@ -157,14 +179,3 @@ class MyLightningModule(L.LightningModule):
                 )
             except Exception:
                 print(f"Error in logging gradients {norm}, {max_abs}")
-
-    def on_before_zero_grad(self, optimizer):
-        """Should be run to identify all unused parameters in case of "unused parameters" error.
-        Use with ddp_identify_unused_parameters_true"""
-        if self.identify_unused_parameters:
-            if self.global_rank == 0 and self.trainer.global_step > 0:  # Don't run on first step
-                print("Zero grad params")
-                for name, param in self.named_parameters():
-                    if param.requires_grad and param.grad is None:
-                        print(name)
-                print()
