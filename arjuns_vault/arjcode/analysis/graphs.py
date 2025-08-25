@@ -4,7 +4,7 @@ import seaborn as sns
 from arjcode.analysis.constants import NO_DATA_ERROR
 from arjcode.analysis.utils import check_cols, drop_na, preprocess_data
 from matplotlib import pyplot as plt
-from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve
+from sklearn.metrics import average_precision_score, confusion_matrix, precision_recall_curve, roc_auc_score, roc_curve
 
 
 def scatterplot(
@@ -116,6 +116,77 @@ def roc(
 
     plt.xlabel("FPR = (1 - TNR)")
     plt.ylabel("TPR")
+    plt.legend(bbox_to_anchor=(1.0, 1.01), loc="upper left")
+    plt.xticks(np.arange(0, 1, 0.05), rotation=90)
+    plt.yticks(np.arange(0, 1, 0.05))
+    plt.show()
+    print("-------------------------")
+
+
+def pr(
+    data: pd.DataFrame,
+    y_gt_cols: list[str],
+    y_scores_cols: list[str] = [],
+    rads_cols: list[str] = [],
+    smoothen_curve: bool = False,
+):
+    print("-------------------------")
+    print("GTs:".ljust(7), y_gt_cols)
+    print("Scores:".ljust(7), y_scores_cols)
+    print()
+
+    plt.figure(figsize=(8, 8))
+    plt.xlim(-0.05, 1.05)
+    plt.ylim(-0.05, 1.05)
+    plt.plot((0, 1), (1, 0), "r")
+    plt.plot((0, 1, 1), (1, 1, 0), "g")
+
+    assert len(y_gt_cols) > 0, "At least one `y_gt_col` must be provided"
+
+    missing_cols = check_cols(data, y_gt_cols + y_scores_cols)
+    if len(missing_cols):
+        print(f"Missing columns: {missing_cols}")
+        y_gt_cols = [col for col in y_gt_cols if col not in missing_cols]
+        y_scores_cols = [col for col in y_scores_cols if col not in missing_cols]
+
+    for y_gt_col in y_gt_cols:
+        for y_scores_col in y_scores_cols:
+            cols = [y_gt_col, y_scores_col]
+            df = preprocess_data(data, cols)
+
+            if len(df) == 0:
+                continue
+
+            precision, recall, _ = precision_recall_curve(df["GT"], df["Score"])
+            ap = round(average_precision_score(df["GT"], df["Score"]), 3)
+            label = f"AP ({y_gt_col}, {y_scores_col}): {ap}"
+
+            if smoothen_curve:
+                sns.lineplot(x=recall, y=precision, label=label)
+            else:
+                plt.plot(recall, precision, label=label)
+
+        for rad_col in rads_cols:
+            cols = [y_gt_col, rad_col]
+            df = drop_na(data, cols)
+
+            df[y_gt_col] = df[y_gt_col].astype(bool)
+            df[rad_col] = df[rad_col].astype(bool)
+            tp = len(df[df[y_gt_col] & df[rad_col]])
+            fp = len(df[~df[y_gt_col] & df[rad_col]])
+            fn = len(df[df[y_gt_col] & ~df[rad_col]])
+
+            try:
+                precision = tp / (tp + fp)
+                recall = tp / (tp + fn)
+            except ZeroDivisionError:
+                continue
+
+            label = f"{rad_col} ({y_gt_col}): ({round(recall, 3)}, {round(precision, 3)})"
+            plt.plot(recall, precision, "x", label=label)
+
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
     plt.legend(bbox_to_anchor=(1.0, 1.01), loc="upper left")
     plt.xticks(np.arange(0, 1, 0.05), rotation=90)
     plt.yticks(np.arange(0, 1, 0.05))
