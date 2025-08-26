@@ -10,7 +10,7 @@ from torch import nn
 class MyLightningModule(L.LightningModule):
     def __init__(
         self,
-        log_gradients_before_clipping: bool = False,
+        log_gradients_before_clipping: bool = True,
         log_gradients_after_clipping: bool = True,
         print_small_gradient_norms: bool = False,
         print_large_gradient_norms: bool = False,
