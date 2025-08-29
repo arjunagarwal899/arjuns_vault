@@ -124,11 +124,9 @@ class MyLightningModule(L.LightningModule):
                         print(name)
                 print()
 
-    def on_after_backward(self):
+    def configure_gradient_clipping(self, *args, **kwargs):
         if self.log_gradients_before_clipping:
             self._log_gradients(suffix="before_clipping")
-
-    def configure_gradient_clipping(self, *args, **kwargs):
         super().configure_gradient_clipping(*args, **kwargs)
         if self.log_gradients_after_clipping:
             self._log_gradients(suffix="after_clipping")
