@@ -25,3 +25,5 @@ Simplest pastebin for codesharing: https://p.ip.fi
 ---
 
 IoU vs GiOU: https://medium.com/@abhishekjainindore24/giou-ciou-and-diou-variants-of-iou-and-how-they-are-better-compared-to-iou-4610a015643a
+
+Understanding mean average precision (mAP): https://www.superannotate.com/blog/mean-average-precision-and-its-uses-in-object-detection
