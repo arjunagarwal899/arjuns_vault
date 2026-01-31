@@ -4,7 +4,7 @@ Install torch using: https://pytorch.org/get-started/locally/
 List of python packages that are commonly used:
 ```bash
 # General use
-pip install \
+uv pip install \
 black \
 deepdiff \
 einops \
@@ -30,7 +30,7 @@ tabulate \
 termcolor
 
 # Jupyter
-pip install \
+uv pip install \
 ipywidgets \
 notebook \
 jupyterlab \
@@ -38,7 +38,7 @@ nbdev \
 notebook
 
 # Training and logging
-pip install \
+uv pip install \
 clearml \
 coverage \
 efficientnet-pytorch \
@@ -56,7 +56,7 @@ tokenizers \
 torchview
 
 # Documentation and website
-pip install \
+uv pip install \
 pydata-sphinx-theme \
 sphinx \
 sphinx-autodoc-typehints \
@@ -69,7 +69,7 @@ sphinxcontrib-qthelp \
 sphinxcontrib-serializinghtml
 
 # Medical data specific
-pip install \
+uv pip install \
 pydicom \
 redbrick \
 redbrick-sdk \
