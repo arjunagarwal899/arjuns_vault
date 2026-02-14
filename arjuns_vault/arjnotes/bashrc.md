@@ -71,6 +71,8 @@ alias jl="jupyter lab --port "
 alias pid="ps -aux | grep "
 alias io="iostat -m"
 alias wio="iostat -m 1"
+alias gss="git status --short"
+alias glo="git log --oneline"
 
 # ---------- VARIABLES ----------
 export PATH="$HOME/projects/bin:$PATH"
