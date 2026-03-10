@@ -23,6 +23,8 @@ def thresh(df: pd.DataFrame, scores_col: str, thresholds: list, strict: bool = T
         threshed.loc[indices] = (df.loc[indices, scores_col] > threshold).astype(int)
 
     for threshold_info in thresholds:
+        if isinstance(threshold_info, np.floating):
+            threshold_info = float(threshold_info)
         assert isinstance(threshold_info, (tuple, float)), "Threshold info must be a float or a tuple"
         if isinstance(threshold_info, float):
             threshold_info = (None, {None: threshold_info})
@@ -253,6 +255,6 @@ def check_cols(df: pd.DataFrame, colnames: list):
 
 
 def find_nearest(array, value):
-    val = np.min(array[array >= value])
+    val = np.min(array[array >= value], initial=array.max() + 1)
     idx = np.abs(array - val).argmin()
     return idx
