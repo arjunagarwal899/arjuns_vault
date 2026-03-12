@@ -67,6 +67,29 @@ class UserService:
 - `__init__` gets its own docstring documenting the initialization arguments
 - All `Args` documentation for construction belongs in `__init__`, not the class
 
+### Pydantic Models
+
+Do **not** add docstrings to Pydantic model classes. Instead, document fields using `Field(description=...)`. If an existing Pydantic model already has a docstring, remove it.
+
+- Import `Field` from `pydantic` if not already imported
+- Add a `description` to every `Field` in the model
+- If a field has no `Field()` call yet, wrap its default in one (or use `Field(description=...)` for required fields)
+- Keep descriptions concise — same style as docstring arg descriptions
+
+```python
+from pydantic import BaseModel, Field
+
+
+class UserConfig(BaseModel):
+    name: str = Field(description="Display name shown in the UI.")
+    max_retries: int = Field(
+        default=3, description="Number of retry attempts before giving up."
+    )
+    tags: list[str] = Field(
+        default_factory=list, description="Labels for categorizing the user."
+    )
+```
+
 ## Type Hint Guidelines
 
 The goal is **readability, not completeness**. Add types where they help the reader understand the code.
