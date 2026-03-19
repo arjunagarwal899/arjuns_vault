@@ -112,13 +112,34 @@ def add_metrics(df: pd.DataFrame, uncertainty_ranges: list = [], uncertainty_col
     for i in range(len(uncertainty_ranges)):
         df[f"Uncertain{i}"] = df[f"Uncertain{i}"].astype(bool)
 
-    try:
-        auc, auc_ci = ci_roc_auc_score(df["GT"], df["Score"], confidence_level=0.95)
-    except Exception:
-        auc = sk_roc_auc_score(df["GT"], df["Score"])
+    n_positives = df["GT"].sum()
+    n_negatives = (~df["GT"]).sum()
+    has_both_classes = n_positives > 0 and n_negatives > 0
+
+    if has_both_classes:
+        try:
+            auc, auc_ci = ci_roc_auc_score(df["GT"], df["Score"], confidence_level=0.95)
+        except Exception:
+            try:
+                auc = sk_roc_auc_score(df["GT"], df["Score"])
+            except ValueError:
+                auc = np.nan
+            auc_ci = (np.nan, np.nan)
+    else:
+        auc = np.nan
         auc_ci = (np.nan, np.nan)
-    sen, sen_ci = tpr_score(df["GT"], df["Pred"], confidence_level=0.95)
-    spec, spec_ci = tnr_score(df["GT"], df["Pred"], confidence_level=0.95)
+
+    if n_positives > 0:
+        sen, sen_ci = tpr_score(df["GT"], df["Pred"], confidence_level=0.95)
+    else:
+        sen = np.nan
+        sen_ci = (np.nan, np.nan)
+
+    if n_negatives > 0:
+        spec, spec_ci = tnr_score(df["GT"], df["Pred"], confidence_level=0.95)
+    else:
+        spec = np.nan
+        spec_ci = (np.nan, np.nan)
 
     df["Total"] = len(df)
     df["P"] = len(df[df["GT"]])

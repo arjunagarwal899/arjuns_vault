@@ -1,3 +1,5 @@
+import warnings
+
 import pandas as pd
 from arjcode.analysis.constants import NO_DATA_ERROR, TABLE_COLUMNS
 from arjcode.analysis.utils import (
@@ -75,11 +77,13 @@ def stratified_analysis(
                         df = df.drop(index=indices)
                         df = pd.concat([df, pd.DataFrame(new_rows)], ignore_index=True)
 
-            df = pd.DataFrame(
-                df.groupby(strata_cols, sort=False)
-                .apply(lambda x: add_metrics(x, uncertainty_ranges, uncertainty_colnames))
-                .reset_index(drop=True)
-            )
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=FutureWarning, message=".*empty or all-NA entries.*")
+                df = pd.DataFrame(
+                    df.groupby(strata_cols, sort=False)
+                    .apply(lambda x: add_metrics(x, uncertainty_ranges, uncertainty_colnames))
+                    .reset_index(drop=True)
+                )
             df = df.groupby(strata_cols, sort=False).agg(
                 {colname: "max" for colname in table_columns}
                 | {uncertainty_colname: "max" for uncertainty_colname in uncertainty_colnames}
@@ -89,7 +93,6 @@ def stratified_analysis(
                 df = df.sort_values("Total", ascending=False)
                 df = df.iloc[: min(limit, len(df))]
 
-            df.index = df.index.astype(str)
             df = df.sort_index()
 
             if not return_df:
