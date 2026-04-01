@@ -36,7 +36,14 @@
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
 
-### 7. Scratch Directory
+### 7. Minimize Approval Prompts
+- When multiple approaches achieve the same result with equivalent functionality, efficiency, and experience, prefer the one that stays within already-approved permissions
+- Example: use dedicated tools (Read, Grep, Glob, Edit, Write) instead of Bash equivalents (cat, grep, find, sed, echo) — they're both better UX and typically pre-approved
+- Example: prefer `git diff` over interactive commands; prefer non-destructive git operations over destructive ones
+- This is NOT about compromising on correctness — never choose a worse approach just to avoid a prompt. Only apply when alternatives are genuinely equivalent
+- If the best approach requires approval, use it without hesitation
+
+### 8. Scratch Directory
 - All files Claude creates for its own use go in `~/projects/claude_scratch/` (see scratch-directory skill)
 - Use `tempfile`/`tempdir` for truly throwaway files
 - Never pollute the user's project directory with Claude's working artifacts
