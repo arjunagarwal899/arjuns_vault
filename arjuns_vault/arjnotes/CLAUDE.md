@@ -35,3 +35,8 @@
 - Point at logs, errors, failing tests - then resolve them
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
+
+### 7. Scratch Directory
+- All files Claude creates for its own use go in `~/projects/claude_scratch/` (see scratch-directory skill)
+- Use `tempfile`/`tempdir` for truly throwaway files
+- Never pollute the user's project directory with Claude's working artifacts
